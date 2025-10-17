@@ -20,25 +20,85 @@ class Vacancy:
         """Валидация URL вакансии"""
         if not url or not isinstance(url, str):
             raise ValueError("URL вакансии должен быть непустой строкой")
+
+        # Убираем угловые скобки если они есть
+        url = url.strip().strip('<>')
+
         if not url.startswith(('http://', 'https://')):
-            raise ValueError("Некорректный URL вакансии")
+            # Если URL не начинается с http/https, пытаемся исправить
+            if 'hh.ru' in url:
+                url = 'https://' + url.lstrip('/')
+            else:
+                raise ValueError("Некорректный URL вакансии")
+
         return url
 
-    def _validate_salary(self, salary: Dict[str, Any]) -> Dict[str, Any]:
-        """Валидация зарплаты"""
+    def _validate_salary(self, salary: Any) -> Dict[str, Any]:
+        """Валидация зарплаты - принимает разные форматы"""
         if salary is None:
             return {"from": 0, "to": 0, "currency": "не указана"}
 
-        if not isinstance(salary, dict):
-            raise ValueError("Зарплата должна быть словарем")
+        # Если зарплата передана как строка (например, "100 000-150 000 руб.")
+        if isinstance(salary, str):
+            return self._parse_salary_string(salary)
 
-        validated_salary = {
-            "from": salary.get('from') or 0,
-            "to": salary.get('to') or 0,
-            "currency": salary.get('currency', 'не указана')
-        }
+        # Если зарплата передана как словарь
+        if isinstance(salary, dict):
+            validated_salary = {
+                "from": salary.get('from') or 0,
+                "to": salary.get('to') or 0,
+                "currency": salary.get('currency', 'не указана')
+            }
+            return validated_salary
 
-        return validated_salary
+        # Если передан другой тип данных
+        return {"from": 0, "to": 0, "currency": "не указана"}
+
+    def _parse_salary_string(self, salary_str: str) -> Dict[str, Any]:
+        """Парсит строку с зарплатой в словарь"""
+        try:
+            salary_str = salary_str.lower().replace(' ', '')
+
+            # Определяем валюту
+            currency = "руб."
+            if 'usd' in salary_str or '$' in salary_str:
+                currency = "USD"
+            elif 'eur' in salary_str or '€' in salary_str:
+                currency = "EUR"
+
+            # Убираем текст валюты для парсинга чисел
+            salary_str = salary_str.replace('руб.', '').replace('р.', '').replace('rur', '')
+            salary_str = salary_str.replace('usd', '').replace('$', '')
+            salary_str = salary_str.replace('eur', '').replace('€', '')
+            salary_str = salary_str.replace('руб', '').replace('р', '')
+
+            # Парсим диапазон зарплат
+            if '-' in salary_str:
+                parts = salary_str.split('-')
+                if len(parts) == 2:
+                    salary_from = int(parts[0])
+                    salary_to = int(parts[1])
+                    return {"from": salary_from, "to": salary_to, "currency": currency}
+
+            # Если указана одна зарплата
+            if 'от' in salary_str:
+                salary_from = int(salary_str.replace('от', ''))
+                return {"from": salary_from, "to": 0, "currency": currency}
+            elif 'до' in salary_str:
+                salary_to = int(salary_str.replace('до', ''))
+                return {"from": 0, "to": salary_to, "currency": currency}
+            else:
+                # Пытаемся извлечь число
+                import re
+                numbers = re.findall(r'\d+', salary_str)
+                if numbers:
+                    salary_val = int(numbers[0])
+                    return {"from": salary_val, "to": salary_val, "currency": currency}
+
+        except (ValueError, AttributeError):
+            pass
+
+        return {"from": 0, "to": 0, "currency": "не указана"}
 
     def _validate_description(self, description: str) -> str:
         """Валидация описания"""
@@ -88,11 +148,11 @@ class Vacancy:
             currency = self._salary.get('currency', '')
 
             if from_salary and to_salary:
-                salary_info = f"{from_salary} - {to_salary} {currency}"
+                salary_info = f"{from_salary:,} - {to_salary:,} {currency}".replace(',', ' ')
             elif from_salary:
-                salary_info = f"от {from_salary} {currency}"
+                salary_info = f"от {from_salary:,} {currency}".replace(',', ' ')
             elif to_salary:
-                salary_info = f"до {to_salary} {currency}"
+                salary_info = f"до {to_salary:,} {currency}".replace(',', ' ')
 
         return (f"Вакансия: {self._title}\n"
                 f"Зарплата: {salary_info}\n"
