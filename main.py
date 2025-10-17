@@ -1,4 +1,10 @@
 # Создание экземпляра класса для работы с API сайтов с вакансиями
+from src.HeadHunterAPI import HeadHunterAPI
+from src.JSONSaver import JSONSaver
+from src.Vacancy import Vacancy
+from src.filter_vacancies import filter_vacancies, get_vacancies_by_salary, sort_vacancies, get_top_vacancies, \
+    print_vacancies
+
 hh_api = HeadHunterAPI()
 
 # Получение вакансий с hh.ru в формате JSON
