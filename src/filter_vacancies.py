@@ -76,7 +76,12 @@ def user_interaction():
 
     # Создаем экземпляры классов
     hh_api = HeadHunterAPI()
-    json_saver = JSONSaver()
+    json_saver = JSONSaver()  # Теперь файл будет создаваться в папке data
+
+    # Показываем информацию о файле
+    file_info = json_saver.get_file_info()
+    print(f"Файл для сохранения: {file_info['filename']}")
+    print(f"Текущее количество вакансий в файле: {file_info['vacancies_count']}")
 
     # Ввод данных от пользователя
     search_query = input("Введите поисковый запрос: ").strip()
@@ -94,20 +99,24 @@ def user_interaction():
 
     # Получение вакансий
     hh_vacancies_data = hh_api.get_vacancies(search_query)
+    print(f"Получено {len(hh_vacancies_data)} вакансий с API")
+
     vacancies_list = Vacancy.cast_to_object_list(hh_vacancies_data)
+    print(f"Создано {len(vacancies_list)} объектов Vacancy")
 
     if not vacancies_list:
         print("Вакансии по вашему запросу не найдены")
         return
 
-    # Сохранение в файл
-    for vacancy in vacancies_list:
-        json_saver.add_vacancy(vacancy)
+    # Сохранение в файл - используем новый метод для списка
+    json_saver.add_vacancies(vacancies_list)
 
-    print(f"Найдено {len(vacancies_list)} вакансий")
+    # Проверяем что сохранилось
+    saved_vacancies = json_saver.get_vacancies()
+    print(f"В файле сохранено {len(saved_vacancies)} вакансий")
 
     # Фильтрация и сортировка
-    filtered_vacancies = filter_vacancies(vacancies_list, filter_words)
+    filtered_vacancies = filter_vacancies(saved_vacancies, filter_words)
     print(f"После фильтрации по ключевым словам: {len(filtered_vacancies)} вакансий")
 
     ranged_vacancies = get_vacancies_by_salary(filtered_vacancies, salary_range)
@@ -126,6 +135,8 @@ def user_interaction():
         print("1 - Показать все сохраненные вакансии")
         print("2 - Поиск по ключевому слову в сохраненных вакансиях")
         print("3 - Очистить файл с вакансиями")
+        print("4 - Показать информацию о файле")
+        print("5 - Показать путь к файлу")
         print("0 - Выход")
 
         choice = input("Выберите действие: ").strip()
@@ -141,8 +152,21 @@ def user_interaction():
             print_vacancies(found_vacancies)
 
         elif choice == "3":
-            json_saver.clear()
-            print("Файл с вакансиями очищен")
+            confirm = input("Вы уверены, что хотите очистить файл? (y/n): ").strip().lower()
+            if confirm == 'y':
+                json_saver.clear()
+            else:
+                print("Очистка отменена")
+
+        elif choice == "4":
+            file_info = json_saver.get_file_info()
+            print(f"Информация о файле:")
+            print(f"  Путь: {file_info['filename']}")
+            print(f"  Размер: {file_info['file_size_kb']} KB")
+            print(f"  Количество вакансий: {file_info['vacancies_count']}")
+
+        elif choice == "5":
+            print(f"Файл сохраняется в: {json_saver.filename}")
 
         elif choice == "0":
             print("До свидания!")

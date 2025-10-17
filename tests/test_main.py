@@ -74,3 +74,61 @@ class TestJSONSaver(unittest.TestCase):
         vacancies = self.saver.get_vacancies()
         self.assertEqual(len(vacancies), 0)
 
+
+# test_json_saver.py
+from src.JSONSaver import JSONSaver
+from src.Vacancy import Vacancy
+
+
+def test_json_saver_with_data_dir():
+    """Тестирование работы JSONSaver с папкой data"""
+
+    print("Тестирование JSONSaver с папкой data...")
+
+    # Создаем тестовые вакансии
+    test_vacancies = [
+        Vacancy(
+            "Python Developer",
+            "https://hh.ru/vacancy/python123",
+            {"from": 100000, "to": 150000, "currency": "RUR"},
+            "Разработка на Python, Django, Flask",
+            "Опыт работы от 2 лет"
+        ),
+        Vacancy(
+            "Java Developer",
+            "https://hh.ru/vacancy/java456",
+            {"from": 120000, "to": 180000, "currency": "RUR"},
+            "Разработка на Java, Spring",
+            "Опыт работы от 3 лет"
+        )
+    ]
+
+    # Создаем saver (файл создастся в data/test_vacancies.json)
+    saver = JSONSaver("test_vacancies.json")
+
+    # Показываем информацию о файле
+    file_info = saver.get_file_info()
+    print(f"Файл: {file_info['filename']}")
+
+    # Очищаем файл
+    saver.clear()
+
+    # Добавляем вакансии
+    saver.add_vacancies(test_vacancies)
+
+    # Получаем вакансии
+    vacancies = saver.get_vacancies()
+    print(f"Получено вакансий: {len(vacancies)}")
+
+    # Проверяем поиск
+    python_vacancies = saver.get_vacancies({"keyword": "python"})
+    print(f"Найдено вакансий с 'python': {len(python_vacancies)}")
+
+    # Показываем все вакансии
+    saver.print_all_vacancies()
+
+    print("Тестирование завершено!")
+
+
+if __name__ == "__main__":
+    test_json_saver_with_data_dir()

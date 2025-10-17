@@ -224,13 +224,14 @@ class Vacancy:
             'requirements': self._requirements
         }
 
+
     @classmethod
     def from_dict(cls, data: Dict[str, Any]) -> 'Vacancy':
         """Создать вакансию из словаря"""
         return cls(
             title=data['title'],
             url=data['url'],
-            salary=data['salary'],
+            salary=data['salary'],  # salary уже должен быть в правильном формате
             description=data['description'],
             requirements=data.get('requirements', '')
         )
