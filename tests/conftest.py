@@ -1,15 +1,12 @@
-import pytest
-import json
 import os
 import sys
-from unittest.mock import Mock
+
+import pytest
+from src.json_saver import JSONSaver
+from src.vacancy import Vacancy
 
 # Добавляем src в путь для импортов
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
-from src.vacancy import Vacancy
-from src.headhunter_api import HeadHunterAPI
-from src.json_saver import JSONSaver
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 
 @pytest.fixture
@@ -18,15 +15,9 @@ def sample_vacancy_data():
     return {
         "name": "Python Developer",
         "alternate_url": "https://hh.ru/vacancy/123456",
-        "salary": {
-            "from": 100000,
-            "to": 150000,
-            "currency": "RUR"
-        },
+        "salary": {"from": 100000, "to": 150000, "currency": "RUR"},
         "description": "Разработка на Python и Django",
-        "snippet": {
-            "requirement": "Опыт работы от 3 лет"
-        }
+        "snippet": {"requirement": "Опыт работы от 3 лет"},
     }
 
 
@@ -38,7 +29,7 @@ def sample_vacancy_dict():
         "url": "https://hh.ru/vacancy/123456",
         "salary": {"from": 100000, "to": 150000, "currency": "RUR"},
         "description": "Разработка на Python и Django",
-        "requirements": "Опыт работы от 3 лет"
+        "requirements": "Опыт работы от 3 лет",
     }
 
 
@@ -56,7 +47,7 @@ def vacancy_without_salary():
         url="https://hh.ru/vacancy/789",
         salary=None,
         description="Описание",
-        requirements="Требования"
+        requirements="Требования",
     )
 
 
@@ -64,15 +55,27 @@ def vacancy_without_salary():
 def vacancy_list():
     """Фикстура со списком вакансий"""
     return [
-        Vacancy("Junior Python", "https://hh.ru/vacancy/1",
-               {"from": 50000, "to": 80000, "currency": "RUR"},
-               "Описание 1", "Требования 1"),
-        Vacancy("Middle Python", "https://hh.ru/vacancy/2",
-               {"from": 100000, "to": 150000, "currency": "RUR"},
-               "Описание 2", "Требования 2"),
-        Vacancy("Senior Python", "https://hh.ru/vacancy/3",
-               {"from": 180000, "to": 250000, "currency": "RUR"},
-               "Описание 3", "Требования 3"),
+        Vacancy(
+            "Junior Python",
+            "https://hh.ru/vacancy/1",
+            {"from": 50000, "to": 80000, "currency": "RUR"},
+            "Описание 1",
+            "Требования 1",
+        ),
+        Vacancy(
+            "Middle Python",
+            "https://hh.ru/vacancy/2",
+            {"from": 100000, "to": 150000, "currency": "RUR"},
+            "Описание 2",
+            "Требования 2",
+        ),
+        Vacancy(
+            "Senior Python",
+            "https://hh.ru/vacancy/3",
+            {"from": 180000, "to": 250000, "currency": "RUR"},
+            "Описание 3",
+            "Требования 3",
+        ),
     ]
 
 
@@ -96,7 +99,7 @@ def sample_api_response():
                 "alternate_url": "https://hh.ru/vacancy/1",
                 "salary": {"from": 100000, "to": 150000, "currency": "RUR"},
                 "description": "Python development",
-                "snippet": {"requirement": "Python experience"}
+                "snippet": {"requirement": "Python experience"},
             },
             {
                 "id": "2",
@@ -104,7 +107,7 @@ def sample_api_response():
                 "alternate_url": "https://hh.ru/vacancy/2",
                 "salary": {"from": 120000, "to": 180000, "currency": "RUR"},
                 "description": "Java development",
-                "snippet": {"requirement": "Java experience"}
-            }
+                "snippet": {"requirement": "Java experience"},
+            },
         ]
     }

@@ -1,4 +1,5 @@
 import pytest
+
 from src.vacancy import Vacancy
 
 
@@ -20,7 +21,7 @@ class TestVacancy:
             url="https://hh.ru/vacancy/123",
             salary="100 000-150 000 руб.",
             description="Test",
-            requirements="Test"
+            requirements="Test",
         )
         assert vacancy.salary["from"] == 100000
         assert vacancy.salary["to"] == 150000
@@ -43,7 +44,7 @@ class TestVacancy:
             title="Dev",
             url="https://test.com",
             salary={"from": 100000, "currency": "RUR"},
-            description="Test"
+            description="Test",
         )
         assert vacancy.get_average_salary() == 100000
 
@@ -53,7 +54,7 @@ class TestVacancy:
             title="Dev",
             url="https://test.com",
             salary={"to": 150000, "currency": "RUR"},
-            description="Test"
+            description="Test",
         )
         assert vacancy.get_average_salary() == 150000
 
@@ -115,10 +116,5 @@ class TestVacancy:
 
     def test_url_with_angle_brackets(self):
         """Тест URL с угловыми скобками"""
-        vacancy = Vacancy(
-            "Test",
-            "<https://hh.ru/vacancy/123>",
-            None,
-            "Test"
-        )
+        vacancy = Vacancy("Test", "<https://hh.ru/vacancy/123>", None, "Test")
         assert vacancy.url == "https://hh.ru/vacancy/123"

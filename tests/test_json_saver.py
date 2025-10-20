@@ -1,8 +1,5 @@
-import pytest
 import json
 import os
-from src.json_saver import JSONSaver
-from src.vacancy import Vacancy
 
 
 class TestJSONSaver:
@@ -13,7 +10,7 @@ class TestJSONSaver:
         assert os.path.exists(json_saver.filename)
 
         # Проверяем что файл создан и пуст
-        with open(json_saver.filename, 'r', encoding='utf-8') as f:
+        with open(json_saver.filename, "r", encoding="utf-8") as f:
             data = json.load(f)
         assert data == []
 
@@ -105,7 +102,7 @@ class TestJSONSaver:
 
         file_info = json_saver.get_file_info()
 
-        assert file_info['filename'] == json_saver.filename
-        assert file_info['vacancies_count'] == 1
-        assert file_info['file_exists'] is True
-        assert file_info['file_size_bytes'] > 0
+        assert file_info["filename"] == json_saver.filename
+        assert file_info["vacancies_count"] == 1
+        assert file_info["file_exists"] is True
+        assert file_info["file_size_bytes"] > 0

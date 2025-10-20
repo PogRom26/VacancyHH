@@ -1,12 +1,12 @@
-import pytest
-from unittest.mock import patch, Mock
-import sys
 import os
+import sys
+from unittest.mock import Mock, patch
+from src.vacancy import Vacancy
+
+import pytest
 
 # Добавляем src в путь для импортов
-sys.path.insert(0, os.path.join(os.path.dirname(__file__), '..', 'src'))
-
-from src.vacancy import Vacancy
+sys.path.insert(0, os.path.join(os.path.dirname(__file__), "..", "src"))
 
 
 class TestUserInteraction:
@@ -16,12 +16,20 @@ class TestUserInteraction:
     def sample_vacancies(self):
         """Фикстура с тестовыми вакансиями"""
         return [
-            Vacancy("Python Developer", "https://hh.ru/vacancy/1",
-                    {"from": 100000, "to": 150000, "currency": "RUR"},
-                    "Python development with Django", "Python experience"),
-            Vacancy("Java Developer", "https://hh.ru/vacancy/2",
-                    {"from": 120000, "to": 180000, "currency": "RUR"},
-                    "Java development with Spring", "Java experience"),
+            Vacancy(
+                "Python Developer",
+                "https://hh.ru/vacancy/1",
+                {"from": 100000, "to": 150000, "currency": "RUR"},
+                "Python development with Django",
+                "Python experience",
+            ),
+            Vacancy(
+                "Java Developer",
+                "https://hh.ru/vacancy/2",
+                {"from": 120000, "to": 180000, "currency": "RUR"},
+                "Java development with Spring",
+                "Java experience",
+            ),
         ]
 
     def test_filter_vacancies_basic(self):
@@ -30,8 +38,16 @@ class TestUserInteraction:
         from main import filter_vacancies
 
         vacancies = [
-            Vacancy("Python Dev", "https://test.com", {"from": 100000}, "Python job", "Python"),
-            Vacancy("Java Dev", "https://test.com", {"from": 120000}, "Java job", "Java"),
+            Vacancy(
+                "Python Dev",
+                "https://test.com",
+                {"from": 100000},
+                "Python job",
+                "Python",
+            ),
+            Vacancy(
+                "Java Dev", "https://test.com", {"from": 120000}, "Java job", "Java"
+            ),
         ]
 
         # Фильтрация по Python
@@ -72,12 +88,16 @@ class TestUserInteraction:
         top_5 = get_top_vacancies(vacancies, 5)
         assert len(top_5) == 3
 
-    @patch('builtins.input')
+    @patch("builtins.input")
     def test_user_interaction_integration(self, mock_input):
         """Интеграционный тест user_interaction с прямым импортом"""
         # Мокаем ввод чтобы сразу выйти
         mock_input.side_effect = [
-            "python", "1", "", "", "0"  # запрос, топ N, фильтры, выход
+            "python",
+            "1",
+            "",
+            "",
+            "0",  # запрос, топ N, фильтры, выход
         ]
 
         # Импортируем и тестируем
@@ -91,9 +111,9 @@ class TestUserInteraction:
             # Если есть исключение - тест провален
             pytest.fail(f"user_interaction failed with exception: {e}")
 
-    @patch('builtins.input')
-    @patch('main.HeadHunterAPI')
-    @patch('main.JSONSaver')
+    @patch("builtins.input")
+    @patch("main.HeadHunterAPI")
+    @patch("main.JSONSaver")
     def test_user_interaction_mocked(self, mock_saver, mock_api, mock_input):
         """Тест с моками API и Saver"""
         # Настраиваем моки
@@ -108,14 +128,18 @@ class TestUserInteraction:
         mock_saver_instance.get_file_info.return_value = {"vacancies_count": 0}
 
         # Мокаем Vacancy.cast_to_object_list
-        with patch('main.Vacancy.cast_to_object_list') as mock_cast:
+        with patch("main.Vacancy.cast_to_object_list") as mock_cast:
             mock_cast.return_value = [
                 Vacancy("Test", "https://test.com", {"from": 100000}, "Desc", "Req")
             ]
 
             # Ввод пользователя
             mock_input.side_effect = [
-                "test", "1", "", "", "0"  # запрос, топ N, фильтры, выход
+                "test",
+                "1",
+                "",
+                "",
+                "0",  # запрос, топ N, фильтры, выход
             ]
 
             # Импортируем и запускаем
@@ -130,8 +154,8 @@ class TestUserInteraction:
             except Exception as e:
                 pytest.fail(f"Test failed with exception: {e}")
 
-    @patch('builtins.input')
-    @patch('main.HeadHunterAPI')
+    @patch("builtins.input")
+    @patch("main.HeadHunterAPI")
     def test_user_interaction_no_results(self, mock_api, mock_input):
         """Тест когда нет результатов"""
         mock_api_instance = Mock()

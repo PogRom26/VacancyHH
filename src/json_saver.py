@@ -1,6 +1,7 @@
 import json
 import os
-from typing import List, Dict, Any
+from typing import Any, Dict, List
+
 from src.vacancy import Vacancy
 from src.vacancy_storage import VacancyStorage
 
@@ -24,7 +25,7 @@ class JSONSaver(VacancyStorage):
     def _ensure_file_exists(self) -> None:
         """Создать файл, если он не существует"""
         if not os.path.exists(self.filename):
-            with open(self.filename, 'w', encoding='utf-8') as f:
+            with open(self.filename, "w", encoding="utf-8") as f:
                 json.dump([], f)
             print(f"Создан файл {self.filename}")
 
@@ -34,7 +35,7 @@ class JSONSaver(VacancyStorage):
 
         # Проверяем, нет ли уже такой вакансии по URL (более надежный критерий)
         for v in vacancies:
-            if v['url'] == vacancy.url:
+            if v["url"] == vacancy.url:
                 print(f"Вакансия уже существует: {vacancy.title}")
                 return  # Вакансия уже существует
 
@@ -45,13 +46,15 @@ class JSONSaver(VacancyStorage):
     def add_vacancies(self, vacancies: List[Vacancy]) -> None:
         """Добавить список вакансий в JSON файл"""
         existing_vacancies = self._load_vacancies()
-        existing_urls = {v['url'] for v in existing_vacancies}
+        existing_urls = {v["url"] for v in existing_vacancies}
 
         new_vacancies = []
         for vacancy in vacancies:
             if vacancy.url not in existing_urls:
                 new_vacancies.append(vacancy.to_dict())
-                existing_urls.add(vacancy.url)  # Добавляем чтобы избежать дубликатов в этом вызове
+                existing_urls.add(
+                    vacancy.url
+                )  # Добавляем чтобы избежать дубликатов в этом вызове
 
         if new_vacancies:
             all_vacancies = existing_vacancies + new_vacancies
@@ -81,20 +84,20 @@ class JSONSaver(VacancyStorage):
             matches = True
 
             # Фильтрация по ключевым словам в описании
-            if 'keyword' in criteria and criteria['keyword']:
-                keyword = criteria['keyword'].lower()
+            if "keyword" in criteria and criteria["keyword"]:
+                keyword = criteria["keyword"].lower()
                 vacancy_text = f"{vacancy.title} {vacancy.description} {vacancy.requirements}".lower()
                 if keyword not in vacancy_text:
                     matches = False
 
             # Фильтрация по минимальной зарплате
-            if 'min_salary' in criteria and criteria['min_salary']:
-                if vacancy.get_average_salary() < criteria['min_salary']:
+            if "min_salary" in criteria and criteria["min_salary"]:
+                if vacancy.get_average_salary() < criteria["min_salary"]:
                     matches = False
 
             # Фильтрация по максимальной зарплате
-            if 'max_salary' in criteria and criteria['max_salary']:
-                if vacancy.get_average_salary() > criteria['max_salary']:
+            if "max_salary" in criteria and criteria["max_salary"]:
+                if vacancy.get_average_salary() > criteria["max_salary"]:
                     matches = False
 
             if matches:
@@ -107,7 +110,7 @@ class JSONSaver(VacancyStorage):
         vacancies = self._load_vacancies()
         initial_count = len(vacancies)
 
-        vacancies = [v for v in vacancies if v['url'] != vacancy.url]
+        vacancies = [v for v in vacancies if v["url"] != vacancy.url]
 
         if len(vacancies) < initial_count:
             self._save_vacancies(vacancies)
@@ -123,7 +126,7 @@ class JSONSaver(VacancyStorage):
     def _load_vacancies(self) -> List[Dict[str, Any]]:
         """Загрузить вакансии из файла"""
         try:
-            with open(self.filename, 'r', encoding='utf-8') as f:
+            with open(self.filename, "r", encoding="utf-8") as f:
                 data = json.load(f)
                 if not isinstance(data, list):
                     print("Ошибка: данные в файле не являются списком")
@@ -139,7 +142,7 @@ class JSONSaver(VacancyStorage):
     def _save_vacancies(self, vacancies: List[Dict[str, Any]]) -> None:
         """Сохранить вакансии в файл"""
         try:
-            with open(self.filename, 'w', encoding='utf-8') as f:
+            with open(self.filename, "w", encoding="utf-8") as f:
                 json.dump(vacancies, f, ensure_ascii=False, indent=2)
             print(f"Сохранено {len(vacancies)} вакансий в файл {self.filename}")
         except Exception as e:
@@ -155,10 +158,10 @@ class JSONSaver(VacancyStorage):
         print(f"\nВсе вакансии в файле {self.filename} ({len(vacancies)}):")
         for i, vacancy in enumerate(vacancies, 1):
             salary_info = "не указана"
-            if vacancy.salary.get('from') or vacancy.salary.get('to'):
-                from_salary = vacancy.salary.get('from', '')
-                to_salary = vacancy.salary.get('to', '')
-                currency = vacancy.salary.get('currency', '')
+            if vacancy.salary.get("from") or vacancy.salary.get("to"):
+                from_salary = vacancy.salary.get("from", "")
+                to_salary = vacancy.salary.get("to", "")
+                currency = vacancy.salary.get("currency", "")
 
                 if from_salary and to_salary:
                     salary_info = f"{from_salary}-{to_salary} {currency}"
@@ -172,7 +175,9 @@ class JSONSaver(VacancyStorage):
     def get_file_info(self) -> Dict[str, Any]:
         """Получить информацию о файле"""
         try:
-            file_size = os.path.getsize(self.filename) if os.path.exists(self.filename) else 0
+            file_size = (
+                os.path.getsize(self.filename) if os.path.exists(self.filename) else 0
+            )
             vacancies_count = len(self._load_vacancies())
 
             return {
@@ -180,10 +185,7 @@ class JSONSaver(VacancyStorage):
                 "file_size_bytes": file_size,
                 "file_size_kb": round(file_size / 1024, 2),
                 "vacancies_count": vacancies_count,
-                "file_exists": os.path.exists(self.filename)
+                "file_exists": os.path.exists(self.filename),
             }
         except Exception as e:
-            return {
-                "filename": self.filename,
-                "error": str(e)
-            }
+            return {"filename": self.filename, "error": str(e)}

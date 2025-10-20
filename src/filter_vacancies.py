@@ -1,33 +1,38 @@
-from src import vacancy
+from typing import List
+
 from src.headhunter_api import HeadHunterAPI
 from src.json_saver import JSONSaver
-from typing import List, Dict, Any
-
 from src.vacancy import Vacancy
 
 
-def filter_vacancies(vacancies: List[Vacancy], filter_words: List[str]) -> List[Vacancy]:
+def filter_vacancies(
+    vacancies: List[Vacancy], filter_words: List[str]
+) -> List[Vacancy]:
     """Фильтровать вакансии по ключевым словам"""
     if not filter_words:
         return vacancies
 
     filtered = []
     for vacancy in vacancies:
-        vacancy_text = f"{vacancy.title} {vacancy.description} {vacancy.requirements}".lower()
+        vacancy_text = (
+            f"{vacancy.title} {vacancy.description} {vacancy.requirements}".lower()
+        )
         if any(word.lower() in vacancy_text for word in filter_words):
             filtered.append(vacancy)
 
     return filtered
 
 
-def get_vacancies_by_salary(vacancies: List[Vacancy], salary_range: str) -> List[Vacancy]:
+def get_vacancies_by_salary(
+    vacancies: List[Vacancy], salary_range: str
+) -> List[Vacancy]:
     """Фильтровать вакансии по диапазону зарплат"""
     if not salary_range or salary_range.strip() == "":
         return vacancies
 
     try:
         # Ожидаем формат: "100000-150000" или "100000 - 150000"
-        range_parts = salary_range.replace(' ', '').split('-')
+        range_parts = salary_range.replace(" ", "").split("-")
         if len(range_parts) != 2:
             return vacancies
 
@@ -94,7 +99,9 @@ def user_interaction():
         print("Некорректное число, будет использовано значение по умолчанию: 10")
         top_n = 10
 
-    filter_words = input("Введите ключевые слова для фильтрации вакансий (через пробел): ").split()
+    filter_words = input(
+        "Введите ключевые слова для фильтрации вакансий (через пробел): "
+    ).split()
     salary_range = input("Введите диапазон зарплат (например: 100000-150000): ").strip()
 
     print("\nИщем вакансии...")
@@ -154,15 +161,17 @@ def user_interaction():
             print_vacancies(found_vacancies)
 
         elif choice == "3":
-            confirm = input("Вы уверены, что хотите очистить файл? (y/n): ").strip().lower()
-            if confirm == 'y':
+            confirm = (
+                input("Вы уверены, что хотите очистить файл? (y/n): ").strip().lower()
+            )
+            if confirm == "y":
                 json_saver.clear()
             else:
                 print("Очистка отменена")
 
         elif choice == "4":
             file_info = json_saver.get_file_info()
-            print(f"Информация о файле:")
+            print(f"  Информация о файле: ")
             print(f"  Путь: {file_info['filename']}")
             print(f"  Размер: {file_info['file_size_kb']} KB")
             print(f"  Количество вакансий: {file_info['vacancies_count']}")

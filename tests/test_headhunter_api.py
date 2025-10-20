@@ -1,7 +1,7 @@
-import pytest
 import requests
-from unittest.mock import Mock, patch
+
 from src.headhunter_api import HeadHunterAPI
+from unittest.mock import Mock, patch
 
 
 class TestHeadHunterAPI:
@@ -12,7 +12,7 @@ class TestHeadHunterAPI:
         api = HeadHunterAPI()
         assert api.base_url == "https://api.hh.ru/vacancies"
 
-    @patch('src.headhunter_api.requests.get')
+    @patch("src.headhunter_api.requests.get")
     def test_get_vacancies_success(self, mock_get, sample_api_response):
         """Тест успешного получения вакансий"""
         # Настраиваем mock
@@ -22,7 +22,7 @@ class TestHeadHunterAPI:
         mock_get.return_value = mock_response
 
         # Мокаем get_vacancy_detail чтобы избежать дополнительных вызовов
-        with patch.object(HeadHunterAPI, 'get_vacancy_detail') as mock_detail:
+        with patch.object(HeadHunterAPI, "get_vacancy_detail") as mock_detail:
             mock_detail.return_value = sample_api_response["items"][0]
 
             api = HeadHunterAPI()
@@ -33,7 +33,7 @@ class TestHeadHunterAPI:
             # Проверяем результат
             assert len(vacancies) == 2
 
-    @patch('src.headhunter_api.requests.get')
+    @patch("src.headhunter_api.requests.get")
     def test_get_vacancies_api_error(self, mock_get):
         """Тест обработки ошибки API"""
         mock_get.side_effect = requests.RequestException("API Error")
@@ -43,7 +43,7 @@ class TestHeadHunterAPI:
 
         assert vacancies == []
 
-    @patch('src.headhunter_api.requests.get')
+    @patch("src.headhunter_api.requests.get")
     def test_get_vacancies_with_area(self, mock_get):
         """Тест получения вакансий с указанием региона"""
         # Настраиваем mock
@@ -55,20 +55,20 @@ class TestHeadHunterAPI:
         api = HeadHunterAPI()
 
         # Мокаем get_vacancy_detail
-        with patch.object(HeadHunterAPI, 'get_vacancy_detail'):
+        with patch.object(HeadHunterAPI, "get_vacancy_detail"):
             api.get_vacancies("Python", area=2)  # СПб
 
             # Проверяем параметры вызова
             call_args = mock_get.call_args
             # Для kwargs используем call_args[1] если есть, иначе call_args.kwargs
             if call_args and len(call_args) >= 2:
-                params = call_args[1].get('params', {})
+                params = call_args[1].get("params", {})
             else:
-                params = call_args.kwargs.get('params', {})
+                params = call_args.kwargs.get("params", {})
 
-            assert params.get('area') == 2
+            assert params.get("area") == 2
 
-    @patch('src.headhunter_api.requests.get')
+    @patch("src.headhunter_api.requests.get")
     def test_get_vacancy_detail_success(self, mock_get):
         """Тест получения деталей вакансии"""
         mock_response = Mock()
@@ -83,7 +83,7 @@ class TestHeadHunterAPI:
         assert result["name"] == "Test"
         mock_get.assert_called_with("https://api.hh.ru/vacancies/123")
 
-    @patch('src.headhunter_api.requests.get')
+    @patch("src.headhunter_api.requests.get")
     def test_get_vacancy_detail_error(self, mock_get):
         """Тест ошибки при получении деталей вакансии"""
         mock_get.side_effect = requests.RequestException("Error")
@@ -91,7 +91,7 @@ class TestHeadHunterAPI:
         api = HeadHunterAPI()
 
         # Должен вернуть пустой список в основном методе
-        with patch.object(api, 'get_vacancies') as mock_main:
+        with patch.object(api, "get_vacancies") as mock_main:
             mock_main.return_value = []
             vacancies = api.get_vacancies("Python")
             assert vacancies == []
@@ -101,14 +101,14 @@ class TestHeadHunterAPI:
         api = HeadHunterAPI()
 
         # Проверяем что параметры правильно формируются
-        with patch('src.headhunter_api.requests.get') as mock_get:
+        with patch("src.headhunter_api.requests.get") as mock_get:
             mock_response = Mock()
             mock_response.json.return_value = {"items": []}
             mock_response.raise_for_status = Mock()
             mock_get.return_value = mock_response
 
             # Мокаем get_vacancy_detail
-            with patch.object(HeadHunterAPI, 'get_vacancy_detail'):
+            with patch.object(HeadHunterAPI, "get_vacancy_detail"):
                 api.get_vacancies("Python Developer")
 
                 # Проверяем вызов
@@ -117,10 +117,10 @@ class TestHeadHunterAPI:
 
                 # Безопасное извлечение параметров
                 if call_args and len(call_args) >= 2:
-                    params = call_args[1].get('params', {})
+                    params = call_args[1].get("params", {})
                 else:
-                    params = call_args.kwargs.get('params', {})
+                    params = call_args.kwargs.get("params", {})
 
-                assert params.get('text') == "Python Developer"
-                assert params.get('per_page') == 100
-                assert params.get('area') == 1  # Москва по умолчанию
+                assert params.get("text") == "Python Developer"
+                assert params.get("per_page") == 100
+                assert params.get("area") == 1  # Москва по умолчанию

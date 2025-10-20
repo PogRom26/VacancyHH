@@ -1,7 +1,9 @@
+from typing import Any, Dict, List
+
 import requests
 
 from src.vacancy_api import VacancyAPI
-from typing import List, Dict, Any
+
 
 class HeadHunterAPI(VacancyAPI):
     """Класс для работы с API HeadHunter"""
@@ -21,10 +23,10 @@ class HeadHunterAPI(VacancyAPI):
             Список вакансий в формате JSON
         """
         params = {
-            'text': search_query,
-            'area': area,
-            'per_page': 100,  # Максимальное количество на странице
-            'page': 0
+            "text": search_query,
+            "area": area,
+            "per_page": 100,  # Максимальное количество на странице
+            "page": 0,
         }
 
         try:
@@ -32,13 +34,13 @@ class HeadHunterAPI(VacancyAPI):
             response.raise_for_status()
             data = response.json()
 
-            vacancies = data.get('items', [])
+            vacancies = data.get("items", [])
 
             # Получаем полные описания вакансий
             detailed_vacancies = []
             for vacancy in vacancies[:50]:  # Ограничиваем для скорости
                 try:
-                    vacancy_detail = self.get_vacancy_detail(vacancy['id'])
+                    vacancy_detail = self.get_vacancy_detail(vacancy["id"])
                     detailed_vacancies.append(vacancy_detail)
                 except Exception as e:
                     print(f"Ошибка при получении деталей вакансии {vacancy['id']}: {e}")
