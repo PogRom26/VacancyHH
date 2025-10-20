@@ -1,0 +1,17 @@
+[project]
+name = "vacancyhh"
+version = "1"
+description = "Поиск вакансий по наименованию и зарпоалате"
+authors = [
+    {name = "Your Name",email = "you@example.com"}
+]
+readme = "README.md"
+requires-python = ">=3.13"
+dependencies = [
+    "from-dict (>=0.5.0,<0.6.0)"
+]
+
+
+[build-system]
+requires = ["poetry-core>=2.0.0,<3.0.0"]
+build-backend = "poetry.core.masonry.api"
