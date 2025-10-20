@@ -1,8 +1,8 @@
 import json
 import os
 from typing import List, Dict, Any
-from src.Vacancy import Vacancy
-from src.VacancyStorage import VacancyStorage
+from src.vacancy import Vacancy
+from src.vacancy_storage import VacancyStorage
 
 
 class JSONSaver(VacancyStorage):

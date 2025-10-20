@@ -1,7 +1,9 @@
 from abc import abstractmethod, ABC
 
-from src import Vacancy
+
 from typing import List, Dict, Any
+
+from src.vacancy import Vacancy
 
 
 class VacancyStorage(ABC):

@@ -1,0 +1,24 @@
+[
+  {
+    "title": "Python Developer",
+    "url": "https://hh.ru/vacancy/python123",
+    "salary": {
+      "from": 100000,
+      "to": 150000,
+      "currency": "RUR"
+    },
+    "description": "Разработка на Python, Django, Flask",
+    "requirements": "Опыт работы от 2 лет"
+  },
+  {
+    "title": "Java Developer",
+    "url": "https://hh.ru/vacancy/java456",
+    "salary": {
+      "from": 120000,
+      "to": 180000,
+      "currency": "RUR"
+    },
+    "description": "Разработка на Java, Spring",
+    "requirements": "Опыт работы от 3 лет"
+  }
+]

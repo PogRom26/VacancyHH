@@ -1,7 +1,9 @@
-from src import Vacancy
-from src.HeadHunterAPI import HeadHunterAPI
-from src.JSONSaver import JSONSaver
+from src import vacancy
+from src.headhunter_api import HeadHunterAPI
+from src.json_saver import JSONSaver
 from typing import List, Dict, Any
+
+from src.vacancy import Vacancy
 
 
 def filter_vacancies(vacancies: List[Vacancy], filter_words: List[str]) -> List[Vacancy]:

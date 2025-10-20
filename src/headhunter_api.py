@@ -1,6 +1,6 @@
 import requests
 
-from src.VacancyAPI import VacancyAPI
+from src.vacancy_api import VacancyAPI
 from typing import List, Dict, Any
 
 class HeadHunterAPI(VacancyAPI):
